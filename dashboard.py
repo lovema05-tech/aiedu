@@ -3,9 +3,21 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# 폰트 설정 (윈도우 환경 한글 깨짐 방지용)
-# 웹 배포 시 (Linux 서버) Malgun Gothic이 없을 수 있으나 윈도우 환경 테스트를 위해 설정
-plt.rc('font', family='Malgun Gothic')
+import os
+import matplotlib.font_manager as fm
+
+# 폰트 설정 (웹 배포 환경에서도 깨지지 않도록 동적 폰트 다운로드)
+@st.cache_resource
+def get_font_family():
+    font_path = "NanumGothic.ttf"
+    if not os.path.exists(font_path):
+        import urllib.request
+        url = "https://github.com/google/fonts/raw/main/ofl/nanumgothic/NanumGothic-Regular.ttf"
+        urllib.request.urlretrieve(url, font_path)
+    fm.fontManager.addfont(font_path)
+    return fm.FontProperties(fname=font_path).get_name()
+
+plt.rc('font', family=get_font_family())
 plt.rc('axes', unicode_minus=False) # 마이너스 기호 깨짐 방지
 
 # 메인 화면 구성 - 상단 제목
